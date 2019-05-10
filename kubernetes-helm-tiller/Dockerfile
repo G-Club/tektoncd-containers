@@ -1,1 +1,2 @@
-FROM gcr.io/kubernetes-helm/tiller:${tag_version}
+ARG TAG_VERSION
+FROM gcr.io/kubernetes-helm/tiller:${TAG_VERSION}
