@@ -23,9 +23,25 @@ spec:
   steps:
     - name: build-and-push
       image: aisuko/kaniko-project-executor:latest
+      
+      env:
+      - name: DOCKER_CONFIG
+        value: /builder/home/.docker
+      
       command:
         - /kaniko/executor
       args:
         - --dockerfile=${inputs.params.pathToDockerFile}
         - --destination=${outputs.resources.builtImage.url}
         - --context=${inputs.params.pathToContext}
+      
+      # The PR was solved the issue, but I believe there would be a better solution
+      # https://github.com/tektoncd/catalog/pull/22
+
+      # volumenmounts:
+      #   - name: docker-config
+      #     mountPath: /kaniko/.docker/
+      # volumes:
+      #   - name: docker-config
+      #     configMap:
+      #       name: docker-config
