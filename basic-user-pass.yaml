@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basic-user-pass
+  annotations:
+    tekton.dev/docker-0: https://hub.docker.com # Described below
+type: kubernetes.io/basic-auth
+stringData:
+  username: aisuko
+  password: ""
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-bot
+secrets:
+  - name: basic-user-pass
