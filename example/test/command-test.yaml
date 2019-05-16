@@ -1,0 +1,8 @@
+schemaVersion: '2.0.0'
+commandTests:
+  - name: "test-output"
+    # setup: 
+    # https://github.com/GoogleContainerTools/container-structure-test/issues/214
+    command: "ls /app"
+    # args: [""]
+    expectedOutput: ["/app"]
