@@ -1,15 +1,35 @@
 apiVersion: skaffold/v1beta10
 kind: Config
-build:
-  tagPolicy:
-    envTemplate:
-      # export FOO=v1
-      template: "{{.IMAGE_NAME}}:{{.FOO}}"
-  artifacts:
-  - image: aisuko/skaffold
-  local: {}
 
-deploy:
-  kubectl:
-    manifests:
+profiles:
+
+- name: build-image
+
+  build:
+    artifacts:
+    - image: aisuko/skaffold-example
+      context: .
+      docker:
+        dockerfile: Dockerfile
+        noCache: false
+    tagPolicy:
+      envTemplate:
+        template: "{{.IMAGE_NAME}}:{{.FOO}}"
+    local:
+      push: true
+      useDockerCLI: false
+      useBuildkit: false
+
+- name: test-image
+
+  test:
+  - image: aisuko/skaffold-example:v1
+    structureTests:
+    - ./test/*
+
+- name: deploy-image
+  
+  deploy:
+    kubectl:
+      manifests:
       - k8s-*
