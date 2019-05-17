@@ -8,28 +8,67 @@ profiles:
   build:
     artifacts:
     - image: aisuko/skaffold-example
-      context: .
-      docker:
-        dockerfile: Dockerfile
-        noCache: false
-    tagPolicy:
-      envTemplate:
-        template: "{{.IMAGE_NAME}}:{{.FOO}}"
-    local:
-      push: true
-      useDockerCLI: false
-      useBuildkit: false
+      kaniko:
+        # flags: ["--cache=true"]
+        image: aisuko/kaniko-project-executor:latest
+        buildContext:
+          localDir: {}
+            # initImage: Dockerfile
+        cache: {}
+    # tagPolicy:
+    #   envTemplate:
+    #     template: "{{.IMAGE_NAME}}:{{.FOO}}"
+    # local:
+    #   push: true
+    #   useDockerCLI: false
+    #   useBuildkit: false
 
-- name: test-image
+    cluster:
+      pullSecretName: aisuko-regis
+      namespace: default
+      # dockerConfig:
+      #   path: ~/.docker/config.json
+      # resources:
+      #   requests:
+      #     cpu: 200m
+      #     memory: 100Mi
+      #   limits:
+      #     cpu: 200m
+      #     memory: 100Mi
 
-  test:
-  - image: aisuko/skaffold-example:v1
-    structureTests:
-    - ./test/*
+# - name: test-image
 
-- name: deploy-image
+#   test:
+#   - image: aisuko/skaffold-example:v1
+#     structureTests:
+#     - ./test/*
+
+# - name: deploy-image
   
-  deploy:
-    kubectl:
-      manifests:
-      - k8s-*
+#   deploy:
+#     kubectl:
+#       manifests:
+#       - k8s-*
+
+build:
+  artifacts:
+  - image: aisuko/skaffold-example
+    kaniko:
+      # flags: ["--cache=true"]
+      image: aisuko/kaniko-project-executor:latest
+      buildContext:
+        localDir: {}
+            # initImage: Dockerfile
+      cache: {}
+    # tagPolicy:
+    #   envTemplate:
+    #     template: "{{.IMAGE_NAME}}:{{.FOO}}"
+    # local:
+    #   push: true
+    #   useDockerCLI: false
+    #   useBuildkit: false
+
+  cluster:
+    pullSecretName: aisuko-regis
+    namespace: default
+  
