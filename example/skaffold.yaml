@@ -1,35 +1,36 @@
 apiVersion: skaffold/v1beta10
 kind: Config
 
+build: {}
+deploy:
+  kubectl:
+    manifests:
+      - k8s-*.yaml
+      - service-*.yaml
+
 profiles:
+  - name: deploy-helm
+    deploy:
+      helm:
+        releases:
+          - name: skaff
+            chartPath: skaff
+            namespace: skaffo
+            wait: false
+            recreatePods: true
+            skipBuildDependencies: false
+            useHelmSecrets: false
+            packaged:
+              version: 0.2.0
+              appVersion: "2.0"
+            valuesFiles: [./values.yaml]
+            
 
-- name: build-image
-
-  build:
-    artifacts:
-    - image: aisuko/skaffold-example
-      context: .
-      docker:
-        dockerfile: Dockerfile
-        noCache: false
-    tagPolicy:
-      envTemplate:
-        template: "{{.IMAGE_NAME}}:{{.FOO}}"
-    local:
-      push: true
-      useDockerCLI: false
-      useBuildkit: false
-
-- name: test-image
-
-  test:
-  - image: aisuko/skaffold-example:v1
-    structureTests:
-    - ./test/*
-
-- name: deploy-image
-  
-  deploy:
-    kubectl:
-      manifests:
-      - k8s-*
+  - name: deploy-kustomize
+    deploy:
+      kustomize:
+        path: .
+        flags:
+          global: []
+          apply: []
+          delete: []
