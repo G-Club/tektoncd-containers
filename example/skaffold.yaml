@@ -1,74 +1,59 @@
 apiVersion: skaffold/v1beta10
 kind: Config
 
+build: {}
+deploy:
+  kubectl:
+    manifests:
+      - k8s-*.yaml
+      - service-*.yaml
+
 profiles:
+  - name: build-kaniko
+    build:
+      artifacts:
+      -  image: aisuko/skaffold
+         kaniko:
+           image: gcr.io/kaniko-project/executor:latest
+      insecureRegistries: [10.116.18.93"]
+      tagPolicy:
+        envTemplate:
+          template: "{{.IMAGE_NAME}}:{{.FOO}}"
+      cluster:
+        pullSecretName: regcred
+        namespace: default
+        dockerConfig:
+          path: /Users/bowen/.docker/config.json
+          secretName: auth2
 
-- name: build-image
+  - name: test
+    test:
+    -  image: index.docker.io/v1/aisuko/skaffold:v2
+       structureTests:
+       -  ./test/*
 
-  build:
-    artifacts:
-    - image: aisuko/skaffold-example
-      kaniko:
-        # flags: ["--cache=true"]
-        image: aisuko/kaniko-project-executor:latest
-        buildContext:
-          localDir: {}
-            # initImage: Dockerfile
-        cache: {}
-    # tagPolicy:
-    #   envTemplate:
-    #     template: "{{.IMAGE_NAME}}:{{.FOO}}"
-    # local:
-    #   push: true
-    #   useDockerCLI: false
-    #   useBuildkit: false
+  - name: deploy-helm
+    deploy:
+      helm:
+        releases:
+          - name: skaff
+            chartPath: skaff
+            namespace: skaffo
+            wait: false
+            recreatePods: true
+            skipBuildDependencies: false
+            useHelmSecrets: false
+            packaged:
+              version: 0.2.0
+              appVersion: "2.0"
+            valuesFiles: [./values.yaml]
+            
 
-    cluster:
-      pullSecretName: aisuko-regis
-      namespace: default
-      # dockerConfig:
-      #   path: ~/.docker/config.json
-      # resources:
-      #   requests:
-      #     cpu: 200m
-      #     memory: 100Mi
-      #   limits:
-      #     cpu: 200m
-      #     memory: 100Mi
-
-# - name: test-image
-
-#   test:
-#   - image: aisuko/skaffold-example:v1
-#     structureTests:
-#     - ./test/*
-
-# - name: deploy-image
-  
-#   deploy:
-#     kubectl:
-#       manifests:
-#       - k8s-*
-
-build:
-  artifacts:
-  - image: aisuko/skaffold-example
-    kaniko:
-      # flags: ["--cache=true"]
-      image: aisuko/kaniko-project-executor:latest
-      buildContext:
-        localDir: {}
-            # initImage: Dockerfile
-      cache: {}
-    # tagPolicy:
-    #   envTemplate:
-    #     template: "{{.IMAGE_NAME}}:{{.FOO}}"
-    # local:
-    #   push: true
-    #   useDockerCLI: false
-    #   useBuildkit: false
-
-  cluster:
-    pullSecretName: aisuko-regis
-    namespace: default
-  
+  - name: deploy-kustomize
+    deploy:
+      kustomize:
+        path: kustom/overlays/staging/
+        flags:
+          global: []
+          apply: []
+          delete: []

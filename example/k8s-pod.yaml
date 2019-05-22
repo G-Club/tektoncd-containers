@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: skaffold-example
+  name: private-reg
 spec:
   containers:
-  - name: skaffold-example
-    image: aisuko/skaffold-example:v1
+  - name: private-reg-container
+    image: aisuko/skaffold:latest
+  imagePullSecrets:
+  - name: regcred
