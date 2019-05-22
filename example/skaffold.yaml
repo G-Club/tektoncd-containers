@@ -9,6 +9,29 @@ deploy:
       - service-*.yaml
 
 profiles:
+  - name: build-kaniko
+    build:
+      artifacts:
+      -  image: aisuko/skaffold
+         kaniko:
+           image: gcr.io/kaniko-project/executor:latest
+      insecureRegistries: [10.116.18.93"]
+      tagPolicy:
+        envTemplate:
+          template: "{{.IMAGE_NAME}}:{{.FOO}}"
+      cluster:
+        pullSecretName: regcred
+        namespace: default
+        dockerConfig:
+          path: /Users/bowen/.docker/config.json
+          secretName: auth2
+
+  - name: test
+    test:
+    -  image: index.docker.io/v1/aisuko/skaffold:v2
+       structureTests:
+       -  ./test/*
+
   - name: deploy-helm
     deploy:
       helm:
@@ -29,7 +52,7 @@ profiles:
   - name: deploy-kustomize
     deploy:
       kustomize:
-        path: .
+        path: kustom/overlays/staging/
         flags:
           global: []
           apply: []
