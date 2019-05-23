@@ -28,7 +28,7 @@ profiles:
 
   - name: test
     test:
-    -  image: index.docker.io/v1/aisuko/skaffold:v2
+    -  image: aisuko/skaffold:v1
        structureTests:
        -  ./test/*
 

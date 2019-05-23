@@ -15,9 +15,7 @@ spec:
           name: skaffold-git
     params:
       - name: pathToDockerFile
-        value: Dockerfile
-      - name: pathToContext
-        value: /workspace/docker-source/examples/microservices/leeroy-web #configure: may change according to your source
+        value: ./example/Dockerfile
   outputs:
     resources:
       - name: builtImage
