@@ -6,4 +6,4 @@ spec:
   type: image
   params:
     - name: url
-      value: aisuko/skaffold:latest
+      value: index.docker.io/aisuko/skaffold
