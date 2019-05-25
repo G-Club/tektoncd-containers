@@ -3,5 +3,5 @@ commandTests:
   - name: "test-output"
     # setup: 
     # https://github.com/GoogleContainerTools/container-structure-test/issues/214
-    command: 'sh -c echo $PATH'
-    expectedOutput: ['/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin']
+    command: 'ls'
+    expectedOutput: ['bin']

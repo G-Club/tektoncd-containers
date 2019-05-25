@@ -5,6 +5,7 @@ metadata:
 spec:
   containers:
   - name: private-reg-container
-    image: aisuko/skaffold:latest
+    image: aisuko/skaffold
+    imagePullPolicy: Always
   imagePullSecrets:
   - name: regcred
